@@ -14,30 +14,30 @@
     const btn = document.getElementById("shareBtn");
 
     btn.onclick = () => {
+      console.log("Telegram:", window.Telegram);
+      console.log("WebApp:", window.Telegram?.WebApp);
+      console.log("shareMessage:", window.Telegram?.WebApp?.shareMessage);
+      console.log("shareUrl:", window.Telegram?.WebApp?.shareUrl);
+
       const url = "https://t.me/karlsruheinfo_bot/app?startapp=map";
       const text = "📍 Тестовое сообщение\nОткрыть карту 🌍";
 
-      // Если поддерживается новый API
       if (Telegram?.WebApp?.shareMessage) {
+        alert("Пробуем shareMessage()");
         Telegram.WebApp.shareMessage({
           text,
-          button: {
-            text: "Открыть карту 🌍",
-            url
-          }
+          button: { text: "Открыть карту 🌍", url }
         });
-      } 
-      // Если нет — fallback на старый метод
-      else if (Telegram?.WebApp?.shareUrl) {
+      } else if (Telegram?.WebApp?.shareUrl) {
+        alert("Пробуем shareUrl()");
         Telegram.WebApp.shareUrl(url, text);
-      } 
-      // Если вообще не в Telegram — fallback копирование
-      else {
+      } else {
+        alert("Не в Telegram — копирую ссылку");
         navigator.clipboard.writeText(url);
-        alert("Ссылка скопирована в буфер обмена");
       }
     };
   </script>
 </body>
 </html>
+
 
