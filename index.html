@@ -158,63 +158,48 @@
     // поля: id, cat, title, desc, address, phone, site, tg, wa, tags[], mapQuery
     const DATA = [
       // ЖИЛЬЁ
-      { id:"wg1", cat:"housing", title:"WG-Gesucht",
-        desc:"Популярная площадка поиска комнат и квартир в Германии.",
-        address:"Онлайн", phone:"", site:"https://wg-gesucht.de", tg:"", wa:"",
-        tags:["площадка","аренда","комната"], mapQuery:"Berlin" },
-      { id:"im1", cat:"housing", title:"Immobilienscout24",
-        desc:"Крупнейший сайт для поиска жилья: квартиры, дома, коммерция.",
-        address:"Онлайн", phone:"", site:"https://immobilienscout24.de",
-        tg:"", wa:"", tags:["площадка","аренда","квартира"], mapQuery:"Berlin" },
-      { id:"miet1", cat:"housing", title:"Mieterverein Berlin",
-        desc:"Союз арендаторов: консультации по аренде и правам жильцов.",
-        address:"Spichernstr. 1, 10777 Berlin", phone:"+49 30 226260",
-        site:"https://mieterverein-berlin.de", tg:"", wa:"",
-        tags:["юристы","аренда","консультация"], mapQuery:"Spichernstr. 1, Berlin" },
+     // Жильё
+{ id:"wg2", cat:"housing", title:"Studierendenwerk Karlsruhe – Wohnheime",
+  desc:"Студенческие общежития Карлсруе. Доступные цены, список и подача заявки онлайн.",
+  address:"Adenauerring 7, 76131 Karlsruhe", phone:"+49 721 69020",
+  site:"https://www.sw-ka.de/en/wohnen/", tg:"", wa:"",
+  tags:["студенты","общежитие","жильё"], mapQuery:"Studierendenwerk Karlsruhe" },
 
-      // РАБОТА
-      { id:"job1", cat:"jobs", title:"StepStone",
-        desc:"Сайт вакансий по всей Германии. Удобные фильтры и подписки.",
-        address:"Онлайн", phone:"", site:"https://stepstone.de", tg:"", wa:"",
-        tags:["вакансии","офис","IT"], mapQuery:"Berlin" },
-      { id:"job2", cat:"jobs", title:"Indeed",
-        desc:"Большая база вакансий. Полезно для поиска первой работы.",
-        address:"Онлайн", phone:"", site:"https://de.indeed.com", tg:"", wa:"",
-        tags:["вакансии","любой опыт"], mapQuery:"Berlin" },
+// Работа
+{ id:"job3", cat:"jobs", title:"Agentur für Arbeit Karlsruhe",
+  desc:"Федеральное агентство по труду: вакансии, пособия, консультации.",
+  address:"Brauerstr. 10, 76135 Karlsruhe", phone:"+49 721 8230",
+  site:"https://www.arbeitsagentur.de/vor-ort/karlsruhe", tg:"", wa:"",
+  tags:["работа","агентство","пособие"], mapQuery:"Agentur für Arbeit Karlsruhe" },
 
-      // ВРАЧИ
-      { id:"med1", cat:"health", title:"Charité – Universitätsmedizin",
-        desc:"Одна из крупнейших клиник Европы. Запись онлайн.",
-        address:"Charitéplatz 1, 10117 Berlin", phone:"+49 30 45050",
-        site:"https://www.charite.de/en", tg:"", wa:"", tags:["клиника","университетская"],
-        mapQuery:"Charité Berlin" },
-      { id:"med2", cat:"health", title:"Apothekenfinder",
-        desc:"Поиск ближайших аптек и дежурных аптек по городу.",
-        address:"Онлайн", phone:"", site:"https://www.aponet.de/apotheke/notdienstsuche",
-        tg:"", wa:"", tags:["аптеки","дежурные"], mapQuery:"Berlin" },
+// Врачи
+{ id:"med3", cat:"health", title:"Städtisches Klinikum Karlsruhe",
+  desc:"Главная городская клиника. Приём по направлениям, экстренная помощь.",
+  address:"Moltkestraße 90, 76133 Karlsruhe", phone:"+49 721 9740",
+  site:"https://www.klinikum-karlsruhe.de", tg:"", wa:"",
+  tags:["клиника","больница"], mapQuery:"Klinikum Karlsruhe" },
 
-      // ДОКУМЕНТЫ
-      { id:"amt1", cat:"docs", title:"Bürgeramt Termin",
-        desc:"Онлайн-запись в Bürgeramt: регистрация адреса (Anmeldung) и др.",
-        address:"Разные адреса", phone:"", site:"https://service.berlin.de/terminvereinbarung",
-        tg:"", wa:"", tags:["запись","регистрация","anmeldung"], mapQuery:"Bürgeramt Berlin" },
-      { id:"tr1", cat:"docs", title:"Переводчик (рус/укр-de)",
-        desc:"Сертифицированный переводчик. Принимает по записи.",
-        address:"Friedrichstr. 100, Berlin", phone:"+49 176 11111111",
-        site:"", tg:"https://t.me/username", wa:"https://wa.me/4917611111111",
-        tags:["переводы","нотариат"], mapQuery:"Friedrichstr. 100, Berlin" },
+// Документы
+{ id:"amt2", cat:"docs", title:"Bürgerbüro Karlsruhe",
+  desc:"Регистрация адреса (Anmeldung), паспорта, справки.",
+  address:"Kaiserallee 8, 76133 Karlsruhe", phone:"+49 721 133-3333",
+  site:"https://www.karlsruhe.de/buergerbuero", tg:"", wa:"",
+  tags:["anmeldung","регистрация","паспорт"], mapQuery:"Bürgerbüro Karlsruhe" },
 
-      // УСЛУГИ
-      { id:"srv1", cat:"services", title:"Ремонт и мелкие работы",
-        desc:"Сборка мебели, мелкий ремонт, электрика. Быстрый выезд.",
-        address:"Berlin", phone:"+49 160 22222222", site:"",
-        tg:"https://t.me/username2", wa:"https://wa.me/4916022222222",
-        tags:["мастер","ремонт","электрика"], mapQuery:"Berlin" },
-      { id:"srv2", cat:"services", title:"Переезды и перевозки",
-        desc:"Газель/ван. Поможем с переездом по Берлину и землям.",
-        address:"Berlin", phone:"+49 157 33333333", site:"",
-        tg:"", wa:"https://wa.me/4915733333333",
-        tags:["грузоперевозки","переезд"], mapQuery:"Berlin" },
+// Услуги
+{ id:"srv3", cat:"services", title:"Український культурний центр",
+  desc:"Допомога переселенцям, мовні курси, культурні заходи.",
+  address:"Karlstr. 16, 76133 Karlsruhe", phone:"+49 721 123456",
+  site:"https://ukr-kultur.de", tg:"https://t.me/karlsruhe_ukr", wa:"",
+  tags:["українці","помощь","курсы"], mapQuery:"Karlstr. 16, Karlsruhe" },
+
+// Транспорт
+{ id:"tr2", cat:"transport", title:"KVV – Karlsruher Verkehrsverbund",
+  desc:"Приложение и сайт для покупки билетов, расписания трамваев и автобусов.",
+  address:"Tullastraße 71, 76131 Karlsruhe", phone:"+49 721 61070",
+  site:"https://www.kvv.de", tg:"", wa:"",
+  tags:["транспорт","трамвай","билеты"], mapQuery:"KVV Karlsruhe" },
+
 
       // FAQ (вопрос/ответ в описании)
       { id:"faq1", cat:"faq", title:"Как сделать Anmeldung?",
@@ -376,16 +361,20 @@
       $mFav.textContent = (state.fav.has(it.id) ? "− Удалить из избранного" : "⭐ В избранное");
       $mFav.onclick = ()=>{ toggleFav(it.id); $mFav.textContent = (state.fav.has(it.id) ? "− Удалить из избранного" : "⭐ В избранное"); render(); };
 
-      $mShare.onclick = async ()=>{
-        const url = location.href.split("#")[0];
-        const text = `Полезно в Берлине: ${it.title}\n${it.desc}\n${url}`;
-        if (navigator.share){
-          try{ await navigator.share({title:it.title,text, url}); }catch{}
-        } else {
-          await navigator.clipboard.writeText(text);
-          alert("Ссылка скопирована");
-        }
-      };
+   $mShare.onclick = ()=>{
+  if (window.Telegram?.WebApp) {
+    const app = Telegram.WebApp;
+    const url = `https://t.me/karlsruheinfo_bot/app?startapp=${it.cat}`;
+    const text = `📍 ${it.title}\n${it.desc}`;
+    app.shareUrl(url, text);
+  } else {
+    // fallback — если открыть в браузере вне Telegram
+    const url = location.href.split("#")[0];
+    navigator.clipboard.writeText(url);
+    alert("Ссылка скопирована");
+  }
+};
+
       document.getElementById("copyPhone").onclick = async ()=>{
         if (it.phone){ await navigator.clipboard.writeText(it.phone); alert("Телефон скопирован"); }
       };
@@ -437,5 +426,4 @@
   </script>
 </body>
 </html>
-
 
