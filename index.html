@@ -1,398 +1,254 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>📖 Довідник Карлсруе — Mini App</title>
-  <meta name="description" content="Корисні контакти: FAQ і Документи. Пошук, теги, вибране." />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    :root{
-      --bg:#0f1115;--card:#161a22;--text:#e6e8ee;--muted:#a2a8b3;
-      --primary:#6aa0ff;--accent:#ffc46a;--ok:#2ecc71;--danger:#ff6b6b;
-      --radius:16px;--shadow:0 10px 24px rgba(0,0,0,.35)
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;background:var(--bg);color:var(--text);
-      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica Neue,Arial;
-      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale
-    }
-    .container{max-width:980px;margin:0 auto;padding:18px}
-    header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{width:44px;height:44px;border-radius:14px;background:var(--card);display:grid;place-items:center;box-shadow:var(--shadow);font-size:22px}
-    .title{font-weight:800;font-size:18px}
-    .subtitle{color:var(--muted);font-size:13px}
+<meta charset="UTF-8">
+<title>📍 Городской справочник</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .botbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0 14px}
-    .botname{padding:8px 12px;border-radius:999px;background:#141a26;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-weight:700}
-    .tgbtn{background:var(--primary);color:#0b1220;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
-    .tgbtn:hover{filter:brightness(1.05)}
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-    .tab{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
-    .tab.active{background:var(--primary);border-color:var(--primary);color:#0b1220}
+<style>
+body {
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+}
 
-    .bar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#121620;border-radius:12px;margin:10px 0 14px}
-    .bar input[type="search"]{flex:1;background:transparent;border:0;color:var(--text);font-size:14px;outline:none}
+header {
+    padding: 16px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    background: #151515;
+    border-bottom: 1px solid #222;
+}
 
-    .tags{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
-    .chip{font-size:12px;color:var(--muted);background:rgba(255,255,255,.06);padding:5px 9px;border-radius:999px;cursor:pointer;border:1px solid rgba(255,255,255,.06)}
-    .chip.active{background:var(--accent);color:#2b1a00;border-color:var(--accent);font-weight:800}
+#loading,
+#no-access {
+    padding: 40px 20px;
+    text-align: center;
+}
 
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    @media (max-width:920px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media (max-width:560px){.grid{grid-template-columns:1fr}}
+#no-access button {
+    margin-top: 14px;
+    padding: 12px 18px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
 
-    .card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;border:1px solid rgba(255,255,255,.06)}
-    .card h3{margin:0;font-size:16px}
-    .meta{color:var(--muted);font-size:12px}
-    .actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
-    .btn{border:1px solid rgba(255,255,255,.08);background:transparent;color:var(--text);padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
-    .btn.primary{background:var(--primary);color:#0b1220;border-color:var(--primary)}
-    .btn.ok{background:var(--ok);color:#06120a;border-color:var(--ok)}
-    .btn.danger{background:var(--danger);color:#160606;border-color:var(--danger)}
-    .fav{margin-left:auto;background:#1b2436}
-    .tagrow{display:flex;gap:6px;flex-wrap:wrap}
-    .small{font-size:12px;color:var(--muted)}
-    .empty{color:var(--muted);text-align:center;padding:30px 6px}
+.btn-subscribe {
+    background: #2ea6ff;
+    color: #000;
+}
 
-    /* modal */
-    .modal{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.5);z-index:40}
-    .sheet{width:100%;max-width:720px;background:var(--card);border-radius:16px 16px 0 0;padding:16px;border:1px solid rgba(255,255,255,.08)}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .sheet h3{margin:0 0 4px 0}
-    .close{margin-left:auto;background:#192033;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
-    .copy{background:#1e2942}
-    .sheet .k{color:var(--muted);font-size:12px}
-    .sheet .v{font-weight:700}
+.btn-check {
+    background: #444;
+    color: #fff;
+}
 
-    .footer{margin:26px 0 40px;text-align:center;color:var(--muted);font-size:12px}
-    .link{color:var(--primary);text-decoration:none}
-  </style>
+#app {
+    display: none;
+    padding: 12px;
+}
+
+.card {
+    background: #1b1b1b;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 0 0 1px #262626;
+}
+
+.card h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+}
+
+.card p {
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.card .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.card button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: #2ea6ff;
+    color: #000;
+    font-weight: 600;
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">🗺️</div>
-        <div>
-          <div class="title">Довідник Карлсруе</div>
-          <div class="subtitle">FAQ • Документи</div>
-        </div>
-      </div>
-      <div class="botbar">
-        <div class="botname"></div>
-        <button class="tgbtn" id="contactAdmin">Зв'язок з адміном</button>
-        <button class="tgbtn" id="openBot">Чат Karlsruhe</button>
-      </div>
-    </header>
 
-    <!-- Навігація: лиш FAQ і Документи -->
-    <nav class="tabs" id="tabs">
-      <button class="tab active" data-cat="faq">FAQ</button>
-      <button class="tab" data-cat="docs">Документи</button>
-    </nav>
+<header>📍 Городской справочник</header>
 
-    <!-- Пошук -->
-    <div class="bar">
-      <span class="small">🔎</span>
-      <input id="search" type="search" placeholder="Пошук по назві, тегам, адресі…" />
-    </div>
+<div id="loading">⏳ Проверка доступа…</div>
 
-    <!-- Теги -->
-    <div class="tags" id="tags"></div>
+<div id="no-access" style="display:none;">
+    <h2>🔒 Доступ ограничен</h2>
+    <p>Раздел доступен только подписчикам канала</p>
 
-    <!-- Сітка карток -->
-    <section id="grid" class="grid" aria-live="polite"></section>
+    <button class="btn-subscribe" onclick="subscribe()">🔔 Подписаться</button><br>
+    <button class="btn-check" onclick="checkAccess()">🔄 Проверить доступ</button>
+</div>
 
-  
+<div id="app"></div>
 
-  <!-- Модалка -->
-  <div id="modal" class="modal" role="dialog" aria-modal="true">
-    <div class="sheet">
-      <div class="row">
-        <h3 id="mTitle">Назва</h3>
-        <button class="btn close" id="mClose">Закрити</button>
-      </div>
-      <div class="small" id="mCategory">Категорія</div>
-      <p id="mDesc" style="margin:10px 0 6px"></p>
+<script>
+/* =========================
+   TELEGRAM INIT
+========================= */
+if (!window.Telegram || !Telegram.WebApp) {
+    document.body.innerHTML = "<h2 style='padding:20px'>❌ Откройте через Telegram</h2>";
+    throw new Error("Not Telegram");
+}
 
-      <div class="row small">
-        <span class="k">Адреса:</span><span class="v" id="mAddr">—</span>
-      </div>
-      <div class="row small">
-        <span class="k">Телефон:</span><span class="v" id="mPhone">—</span>
-        <button class="btn copy" id="copyPhone">Копіювати</button>
-      </div>
-      <div class="row small">
-        <span class="k">Контакти:</span>
-        <a id="mSite" class="btn" href="#" target="_blank" rel="noopener">🌐 Сайт</a>
-        <a id="mTG" class="btn" href="#" target="_blank" rel="noopener">Telegram</a>
-        <a id="mWA" class="btn" href="#" target="_blank" rel="noopener">WhatsApp</a>
-      </div>
-      <div class="row small">
-        <span class="k">Теги:</span><span class="v" id="mTags">—</span>
-      </div>
-      <div class="actions" style="margin-top:12px">
-        <a id="mMap" class="btn primary" href="#" target="_blank" rel="noopener">📍 Подивитись на карті</a>
-        <button id="mFav" class="btn fav">⭐ В обране</button>
-        <button id="mShare" class="btn ok">Поділитися</button>
-      </div>
-    </div>
-  </div>
+const tg = Telegram.WebApp;
+tg.ready();
+tg.expand();
 
-  <script>
-    // ===== ДАНІ =====
-    // Поля: id, cat, title, desc, address, phone, site, tg, wa, tags[], mapQuery
-    const DATA = [
-      // FAQ: LEA (оновлення 01.09.25)
-      { id:"lea", cat:"faq", title:"LEA Karlsruhe — розподільчий табір (оновлення 01.09.25)",
-        desc:"Табір первинного прийому біженців. Працює цілодобово і без вихідних. Адреса: Durlacher Allee 100. Звідси направляють до земель, де є потреба (можуть відправити в інші землі: Баварія, Гессен тощо). Зазвичай трансфер знаходять за декілька днів. Приймають з невеликими тваринами.",
-        address:"Durlacher Allee 100, 76137 Karlsruhe",
-        phone:"",
-        site:"",
-        tg:"",
-        wa:"",
-        tags:["біженці","реєстрація","LEA"],
-        mapQuery:"Durlacher Allee 100 Karlsruhe" },
+/* =========================
+   НАСТРОЙКИ
+========================= */
+const CHANNEL_URL = "https://t.me/mellstroy_moderators"; // 🔴 ИЗМЕНИ
+const SERVER_URL  = "http://localhost:3000";             // 🔴 ИЗМЕНИ ПРИ ДЕПЛОЕ
 
-      // Документи: Ausländerbehörde
-      { id:"ausl", cat:"docs", title:"Ausländerbehörde Karlsruhe — дозволи на перебування",
-        desc:"SG 4: Гуманітарне перебування, виїзд і безпека (включно із захистом громадян України). Подайте заяву онлайн через Germany4Ukraine.",
-        address:"Kaiserallee 8, 76133 Karlsruhe",
-        phone:"+49 721 133-3261",
-        site:"https://www.germany4ukraine.de/UA/online-services/aufenthaltserlaubnis/seite_node.html#/",
-        tg:"",
-        wa:"",
-        tags:["документи","перебування","Ausländerbehörde"],
-        mapQuery:"Ausländerbehörde Karlsruhe" },
-
-      // Документи: Школи — офіційна інформація
-      { id:"schools", cat:"docs", title:"Школи для дітей-біженців — офіційна інформація",
-        desc:"Офіційна інформація від міста: шкільна реєстрація для дітей і молоді з України. Через 6 місяців після в'їзду діти потрапляють під закон про шкільну обов'язковість у Баден-Вюртемберзі. Є інтеграційні підготовчі класи (Vkl, VABO).",
-        address:"—",
-        phone:"",
-        site:"https://www.karlsruhe.de/bildung-soziales/schulstadt-karlsruhe/schulanmeldung-fuer-gefluechtete-kinder-und-jugendliche-aus-der-ukraine",
-        tg:"",
-        wa:"",
-        tags:["школа","освіта","діти"],
-        mapQuery:"Karlsruhe Schulen" },
-
-      // Документи / допомога: UNESON (тимчасова школа)
-      { id:"uneson", cat:"docs", title:"UNESON — тимчасова школа для дітей-біженців",
-        desc:"Діти, які ще не отримали місце в державній школі, можуть відвідувати UNESON (пн–пт, 9:00–16:00). Харчування: сніданок і гарячий обід. Запис: info@uneson.org.",
-        address:"Lernfreunde-Haus, Campus Ost, Gebäude 70.13 A, Rintheimer Querallee 2, 76131 Karlsruhe",
-        phone:"",
-        site:"mailto:info@uneson.org",
-        tg:"",
-        wa:"",
-        tags:["школа","тимчасова","UNESON"],
-        mapQuery:"Lernfreunde-Haus Karlsruhe" }
-    ];
-
-    const CATS = { faq:"FAQ", docs:"Документи" };
-
-    // ===== DOM =====
-    const $tabs = document.getElementById("tabs");
-    const $grid = document.getElementById("grid");
-    const $tags = document.getElementById("tags");
-    const $search = document.getElementById("search");
-    const $modal = document.getElementById("modal");
-    const $mTitle = document.getElementById("mTitle");
-    const $mCategory = document.getElementById("mCategory");
-    const $mDesc = document.getElementById("mDesc");
-    const $mAddr = document.getElementById("mAddr");
-    const $mPhone = document.getElementById("mPhone");
-    const $mSite = document.getElementById("mSite");
-    const $mTG = document.getElementById("mTG");
-    const $mWA = document.getElementById("mWA");
-    const $mTags = document.getElementById("mTags");
-    const $mMap = document.getElementById("mMap");
-    const $mFav = document.getElementById("mFav");
-    const $mShare = document.getElementById("mShare");
-    const $mClose = document.getElementById("mClose");
-    const $openBot = document.getElementById("openBot");
-    const $contactAdmin = document.getElementById("contactAdmin");
-
-    // ===== STATE =====
-    let state = {
-      cat: "faq",   // при завантаженні відкривається FAQ
-      q: "",
-      tag: null,
-      fav: new Set(JSON.parse(localStorage.getItem("fav") || "[]"))
-    };
-
-    // Кнопки — підстав свої username якщо потрібно
-    $contactAdmin.addEventListener("click", ()=>{
-      const url = "https://t.me/Nameid53277432"; // заміни на username адміна
-      if (window.Telegram?.WebApp) Telegram.WebApp.openTelegramLink(url);
-      else window.open(url, "_blank");
-    });
-    $openBot.addEventListener("click", ()=>{
-      const url = "https://t.me/karlsruhe_ua";
-      if (window.Telegram?.WebApp) Telegram.WebApp.openTelegramLink(url);
-      else window.open(url, "_blank");
-    });
-
-    // ===== Функції =====
-    function buildTags(){
-      const pool = DATA.filter(x => x.cat === state.cat);
-      const set = new Set();
-      pool.forEach(x => x.tags?.forEach(t => set.add(t)));
-      $tags.innerHTML = "";
-      if (set.size === 0) return;
-      const all = document.createElement("button");
-      all.className = "chip" + (state.tag === null ? " active" : "");
-      all.textContent = "Усі теги";
-      all.onclick = ()=>{ state.tag = null; render(); };
-      $tags.appendChild(all);
-      [...set].sort().forEach(t=>{
-        const b = document.createElement("button");
-        b.className = "chip" + (state.tag === t ? " active" : "");
-        b.textContent = t;
-        b.onclick = ()=>{ state.tag = state.tag === t ? null : t; render(); };
-        $tags.appendChild(b);
-      });
+/* =========================
+   ДАННЫЕ (ТЕСТ)
+========================= */
+const DATA = [
+    {
+        id: "1",
+        title: "Bürgerbüro Karlsruhe",
+        description: "Регистрация адреса, документы",
+        address: "Kaiserallee 8",
+        phone: "+49 721 133333"
+    },
+    {
+        id: "2",
+        title: "Arbeitsagentur",
+        description: "Работа и пособия",
+        address: "Brauerstraße 10",
+        phone: "+49 800 4555500"
     }
+];
 
-    function card(item){
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <h3>${item.title}</h3>
-        <div class="meta">${CATS[item.cat] || ""}</div>
-        <div class="small">${item.desc}</div>
-        <div class="tagrow">${(item.tags||[]).map(t=>`<span class="chip">${t}</span>`).join("")}</div>
-        <div class="actions">
-          <button class="btn primary">Відкрити</button>
-          <button class="btn ${state.fav.has(item.id) ? "danger" : "fav"}" data-id="${item.id}">
-            ${state.fav.has(item.id) ? "− Видалити" : "⭐ В обране"}
-          </button>
-        </div>
-      `;
-      div.querySelector(".btn.primary").onclick = ()=> openModal(item);
-      div.querySelector("[data-id]").onclick = (e)=>{
-        toggleFav(item.id);
-        render();
-      };
-      return div;
-    }
+/* =========================
+   ПРОВЕРКА ДОСТУПА
+========================= */
+function checkAccess() {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("no-access").style.display = "none";
 
-    function toggleFav(id){
-      if (state.fav.has(id)) state.fav.delete(id);
-      else state.fav.add(id);
-      localStorage.setItem("fav", JSON.stringify([...state.fav]));
-    }
+    const userId = tg.initDataUnsafe?.user?.id;
 
-    function render(){
-      document.querySelectorAll(".tab").forEach(t=>{
-        t.classList.toggle("active", t.dataset.cat === state.cat);
-      });
-      buildTags();
-
-      let list = DATA.filter(x => x.cat === state.cat);
-      const q = state.q.trim().toLowerCase();
-      if (q){
-        list = list.filter(x =>
-          (x.title || "").toLowerCase().includes(q) ||
-          (x.desc || "").toLowerCase().includes(q) ||
-          (x.address || "").toLowerCase().includes(q) ||
-          (x.tags || []).some(t => t.toLowerCase().includes(q))
-        );
-      }
-      if (state.tag){
-        list = list.filter(x => x.tags?.includes(state.tag));
-      }
-
-      $grid.innerHTML = "";
-      if (list.length === 0){
-        $grid.innerHTML = `<div class="empty">Нічого не знайдено. Змініть запит або теги.</div>`;
+    if (!userId) {
+        alert("❌ Не удалось определить пользователя");
         return;
-      }
-      list.forEach(x => $grid.appendChild(card(x)));
     }
 
-    function setupLink(a, href, label){
-      if (href){
-        a.href = href;
-        a.style.display = "inline-block";
-        a.textContent = label;
-      } else {
-        a.style.display = "none";
-      }
-    }
+    fetch(`${SERVER_URL}/check-access?userId=${userId}`)
+        .then(r => r.json())
+        .then(res => {
+            document.getElementById("loading").style.display = "none";
 
-    function openModal(it){
-      $mTitle.textContent = it.title;
-      $mCategory.textContent = CATS[it.cat] || "";
-      $mDesc.textContent = it.desc || "—";
-      $mAddr.textContent = it.address || "—";
-      $mPhone.textContent = it.phone || "—";
-      $mTags.textContent = (it.tags||[]).join(", ") || "—";
+            if (res.access) {
+                showApp();
+            } else {
+                document.getElementById("no-access").style.display = "block";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById("loading").style.display = "none";
+            alert("❌ Ошибка соединения с сервером");
+        });
+}
 
-      setupLink($mSite, it.site, "🌐 Сайт");
-      setupLink($mTG, it.tg, "Telegram");
-      setupLink($mWA, it.wa, "WhatsApp");
-      $mMap.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(it.mapQuery || it.address || "")}`;
+/* =========================
+   ПОКАЗ ПРИЛОЖЕНИЯ
+========================= */
+function showApp() {
+    const app = document.getElementById("app");
+    app.style.display = "block";
+    app.innerHTML = "";
 
-      $mFav.textContent = state.fav.has(it.id) ? "− Видалити з обраного" : "⭐ В обране";
-      $mFav.onclick = ()=>{ toggleFav(it.id); openModal(it); render(); };
+    DATA.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "card";
 
-      $mShare.onclick = async ()=>{
-        const text = `📍 ${it.title}\n${it.desc}\n${it.address || ""}`;
-        if (navigator.share){
-          try { await navigator.share({text}); } catch(e){ /* silent */ }
-        } else if (window.Telegram?.WebApp){
-          Telegram.WebApp.shareUrl(location.href, text);
-        } else {
-          await navigator.clipboard.writeText(text);
-          alert("Інформацію скопійовано в буфер обміну");
-        }
-      };
+        card.innerHTML = `
+            <h3>${item.title}</h3>
+            <p>${item.description}</p>
+            <p>📌 ${item.address}</p>
+            <p>☎️ ${item.phone}</p>
+            <div class="actions">
+                <button onclick="share('${item.id}')">🔁 Поделиться</button>
+            </div>
+        `;
 
-      document.getElementById("copyPhone").onclick = async ()=>{
-        if (it.phone) { await navigator.clipboard.writeText(it.phone); alert("Телефон скопійовано"); }
-      };
-
-      $modal.style.display = "flex";
-    }
-
-    function closeModal(){ $modal.style.display = "none"; }
-
-    // Події
-    $tabs.addEventListener("click", (e)=>{
-      const btn = e.target.closest(".tab");
-      if (!btn) return;
-      state.cat = btn.dataset.cat;
-      state.tag = null;
-      state.q = "";
-      $search.value = "";
-      render();
+        app.appendChild(card);
     });
-    $search.addEventListener("input", e=>{ state.q = e.target.value; render(); });
-    $mClose.addEventListener("click", closeModal);
-    $modal.addEventListener("click", (e)=>{ if (e.target === $modal) closeModal(); });
+}
 
-    // Telegram theme (необов'язково)
-    (function initTheme(){
-      if (window.Telegram?.WebApp){
-        const app = Telegram.WebApp;
-        try { app.expand(); } catch(e){}
-        const p = app.themeParams || {};
-        const css = document.documentElement.style;
-        if (p.bg_color) css.setProperty('--bg', p.bg_color);
-        if (p.secondary_bg_color) css.setProperty('--card', p.secondary_bg_color);
-        if (p.text_color) css.setProperty('--text', p.text_color);
-        if (p.hint_color) css.setProperty('--muted', p.hint_color);
-        if (p.button_color) css.setProperty('--primary', p.button_color);
-      }
-    })();
+/* =========================
+   ШАРИНГ
+========================= */
+function share(id) {
+    const item = DATA.find(x => x.id === id);
+    if (!item) return;
 
-    // Старт
-    render();
-  </script>
+    const text = `📍 ${item.title}
+${item.description}
+
+📌 ${item.address}
+☎️ ${item.phone}
+
+#карлсруэ #полезно`;
+
+    const url = `https://t.me/karlsruheinfo_bot/app?startapp=${id}`; // 🔴 ИЗМЕНИ
+
+    tg.shareUrl(url, text);
+}
+
+/* =========================
+   ПОДПИСКА
+========================= */
+function subscribe() {
+    tg.openTelegramLink(CHANNEL_URL);
+}
+
+/* =========================
+   STARTAPP PARAM
+========================= */
+const startParam = tg.initDataUnsafe?.start_param;
+if (startParam) {
+    console.log("Открыто через startapp:", startParam);
+}
+
+/* =========================
+   СТАРТ
+========================= */
+checkAccess();
+</script>
+
 </body>
 </html>
+
+
+
+
+
